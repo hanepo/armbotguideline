@@ -30,7 +30,7 @@ STEP_BIG   = 100
 POSITION_NAMES = [
     "home",
     "zone_1", "zone_2", "zone_3",
-    "zone_4",            "zone_6",
+    "zone_4", "zone_5", "zone_6",
     "zone_7", "zone_8", "zone_9",
     "drop_red", "drop_green", "drop_blue",
 ]
@@ -39,10 +39,11 @@ ZONE_LAYOUT = """
   ┌───┬───┬───┐
   │ 1 │ 2 │ 3 │
   ├───┼───┼───┤
-  │ 4 │ARM│ 6 │   <- zone 5 = arm center (skip)
+  │ 4 │ 5 │ 6 │
   ├───┼───┼───┤
   │ 7 │ 8 │ 9 │
   └───┴───┴───┘
+      [ARM]     <- arm sits below zone 8
 """
 
 def getch():

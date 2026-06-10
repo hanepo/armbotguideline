@@ -94,7 +94,7 @@ def main():
     bounds    = get_zone_bounds()
 
     # Check all zone positions are calibrated
-    missing = [f"zone_{z}" for z in [1,2,3,4,6,7,8,9]
+    missing = [f"zone_{z}" for z in range(1,10)
                if f"zone_{z}" not in positions]
     if missing:
         print(f"Missing calibration for: {missing}")
@@ -124,11 +124,11 @@ def main():
             for _ in range(20):
                 frame = cam.capture_array()
                 color, zone = detect_blob(frame, bounds)
-                if color and zone and zone != 5:
+                if color and zone:
                     break
                 time.sleep(0.3)
 
-            if not color or not zone or zone == 5:
+            if not color or not zone:
                 print("  No box found. Waiting...\n")
                 time.sleep(1)
                 continue
