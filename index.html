@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ArmBot Color Sorter — Setup Guide</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --blue:   #4a9eff;
+      --green:  #4caf50;
+      --red:    #f44336;
+      --dark:   #0d0d14;
+      --card:   #13131e;
+      --border: #1e1e30;
+      --text:   #d4d4e8;
+      --muted:  #6b6b8a;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--dark);
+      color: var(--text);
+      line-height: 1.65;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(13,13,20,.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 8px;
+      padding: 12px 32px;
+    }
+    nav .logo { font-weight: 700; font-size: 1rem; color: var(--blue); margin-right: auto; }
+    nav a { color: var(--muted); text-decoration: none; font-size: .82rem; padding: 4px 10px; border-radius: 6px; transition: color .2s; }
+    nav a:hover { color: #fff; }
+
+    /* ── HERO ── */
+    .hero {
+      text-align: center;
+      padding: 80px 24px 60px;
+      background: radial-gradient(ellipse at 50% 0%, rgba(74,158,255,.12) 0%, transparent 70%);
+    }
+    .hero .tag {
+      display: inline-block; background: rgba(74,158,255,.15);
+      border: 1px solid rgba(74,158,255,.3); color: var(--blue);
+      font-size: .75rem; letter-spacing: 2px; text-transform: uppercase;
+      padding: 4px 14px; border-radius: 20px; margin-bottom: 20px;
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3.2rem); font-weight: 800; margin-bottom: 16px; }
+    .hero h1 span { background: linear-gradient(90deg,var(--blue),#a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .hero p { color: var(--muted); font-size: 1.05rem; max-width: 560px; margin: 0 auto 40px; }
+
+    /* ── DEMO CANVAS ── */
+    .demo-wrap {
+      display: flex; justify-content: center;
+      margin: 0 auto 80px;
+    }
+    canvas#demo {
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: #0a0a12;
+      max-width: 100%;
+    }
+    .demo-caption { text-align: center; color: var(--muted); font-size: .8rem; margin-top: 10px; }
+
+    /* ── SECTIONS ── */
+    section { max-width: 860px; margin: 0 auto; padding: 60px 24px; }
+    section + section { border-top: 1px solid var(--border); }
+
+    h2 {
+      font-size: 1.55rem; font-weight: 700; margin-bottom: 24px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    h2 .num {
+      background: rgba(74,158,255,.15); border: 1px solid rgba(74,158,255,.3);
+      color: var(--blue); width: 36px; height: 36px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .9rem; font-weight: 700; flex-shrink: 0;
+    }
+    h3 { font-size: 1rem; font-weight: 600; margin: 24px 0 10px; color: #a5b4fc; }
+
+    p { color: var(--text); margin-bottom: 14px; }
+
+    /* cards */
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px 24px; margin-bottom: 16px; }
+
+    /* parts grid */
+    .parts { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin-top: 16px; }
+    .part  { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
+    .part .icon { font-size: 1.4rem; margin-bottom: 6px; }
+    .part .name { font-size: .88rem; font-weight: 600; }
+    .part .desc { font-size: .78rem; color: var(--muted); margin-top: 2px; }
+
+    /* code blocks */
+    pre {
+      background: #080810; border: 1px solid var(--border); border-radius: 10px;
+      padding: 16px 20px; overflow-x: auto; font-size: .82rem;
+      font-family: "SF Mono", "Fira Code", monospace;
+      color: #c9d1d9; margin: 12px 0;
+    }
+    code { color: #7eb8f7; }
+
+    /* wiring table */
+    table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: .88rem; }
+    th { background: rgba(74,158,255,.1); color: var(--blue); text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--border); }
+    td { padding: 9px 14px; border-bottom: 1px solid var(--border); color: var(--text); }
+    tr:hover td { background: rgba(255,255,255,.02); }
+
+    /* steps list */
+    .steps { counter-reset: step; list-style: none; }
+    .steps li {
+      counter-increment: step;
+      display: flex; gap: 16px;
+      padding: 14px 0; border-bottom: 1px solid var(--border);
+    }
+    .steps li::before {
+      content: counter(step);
+      background: rgba(74,158,255,.15); border: 1px solid rgba(74,158,255,.3);
+      color: var(--blue); min-width: 28px; height: 28px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .8rem; font-weight: 700; margin-top: 2px;
+    }
+
+    /* zone diagram */
+    .zone-grid {
+      display: grid; grid-template-columns: repeat(3, 80px);
+      grid-template-rows: repeat(3, 60px); gap: 4px;
+      margin: 20px auto; width: fit-content;
+    }
+    .zone-cell {
+      border: 1px solid var(--border); border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .85rem; font-weight: 600; background: var(--card);
+    }
+    .zone-cell.arm { background: rgba(74,158,255,.15); color: var(--blue); font-size: .75rem; }
+
+    /* color pills */
+    .pill { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: .78rem; font-weight: 600; margin: 2px; }
+    .pill.red   { background: rgba(244,67,54,.2);  color: #f88; }
+    .pill.green { background: rgba(76,175,80,.2);  color: #8f8; }
+    .pill.blue  { background: rgba(74,158,255,.2); color: #8bf; }
+
+    /* alert / tip */
+    .tip {
+      background: rgba(74,158,255,.08); border-left: 3px solid var(--blue);
+      border-radius: 0 8px 8px 0; padding: 12px 16px;
+      font-size: .88rem; color: var(--text); margin: 14px 0;
+    }
+    .tip strong { color: var(--blue); }
+    .warn {
+      background: rgba(255,193,7,.08); border-left: 3px solid #ffc107;
+      border-radius: 0 8px 8px 0; padding: 12px 16px;
+      font-size: .88rem; margin: 14px 0;
+    }
+    .warn strong { color: #ffc107; }
+
+    /* footer */
+    footer {
+      text-align: center; padding: 40px 24px;
+      border-top: 1px solid var(--border);
+      color: var(--muted); font-size: .82rem;
+    }
+    footer a { color: var(--blue); text-decoration: none; }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <span class="logo">ArmBot</span>
+  <a href="#parts">Parts</a>
+  <a href="#wiring">Wiring</a>
+  <a href="#software">Software</a>
+  <a href="#calibrate">Calibrate</a>
+  <a href="#run">Run</a>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="tag">Client Setup Guide</div>
+  <h1>Robot Arm <span>Color Sorter</span></h1>
+  <p>Automatically detects <span class="pill red">red</span> <span class="pill green">green</span> <span class="pill blue">blue</span> objects and sorts them into matching containers — powered by Raspberry Pi 4 and computer vision.</p>
+  <div class="demo-wrap">
+    <div>
+      <canvas id="demo" width="480" height="360"></canvas>
+      <div class="demo-caption">Live animation — watch the arm detect color and sort automatically</div>
+    </div>
+  </div>
+</div>
+
+<!-- OVERVIEW -->
+<section id="overview">
+  <h2><span class="num">★</span>How It Works</h2>
+  <div class="card">
+    <p>A camera mounted overhead watches a <strong>20×20cm work zone</strong> divided into 9 areas. When a colored box is placed anywhere in the zone, the system:</p>
+    <ol class="steps" style="margin-top:12px">
+      <li>Detects the box color and position using computer vision (OpenCV)</li>
+      <li>Rotates the arm to that exact zone</li>
+      <li>Closes the claw to grab the box</li>
+      <li>Moves to the matching container (red → red box, etc.)</li>
+      <li>Releases and returns to home position</li>
+    </ol>
+  </div>
+</section>
+
+<!-- PARTS -->
+<section id="parts">
+  <h2><span class="num">0</span>Parts You Need</h2>
+  <div class="parts">
+    <div class="part"><div class="icon">🦾</div><div class="name">6-servo Robot Arm Kit</div><div class="desc">Huaian Juxizhichuang Technology</div></div>
+    <div class="part"><div class="icon">🖥️</div><div class="name">Raspberry Pi 4 Model B</div><div class="desc">Minimum 2GB RAM</div></div>
+    <div class="part"><div class="icon">📷</div><div class="name">Pi Camera Rev 1.3</div><div class="desc">With 50cm ribbon cable extension</div></div>
+    <div class="part"><div class="icon">⚡</div><div class="name">PSU — Powtek 6V 10A</div><div class="desc">60W switching power supply</div></div>
+    <div class="part"><div class="icon">🧩</div><div class="name">Breadboard + jumper wires</div><div class="desc">For power distribution</div></div>
+    <div class="part"><div class="icon">💾</div><div class="name">MicroSD card</div><div class="desc">16GB or larger, Class 10</div></div>
+    <div class="part"><div class="icon">📦</div><div class="name">3 containers (R/G/B)</div><div class="desc">Drop destination boxes</div></div>
+    <div class="part"><div class="icon">🟥</div><div class="name">9 small colored boxes</div><div class="desc">3 red, 3 green, 3 blue</div></div>
+  </div>
+</section>
+
+<!-- WIRING -->
+<section id="wiring">
+  <h2><span class="num">1</span>Wiring the Servos</h2>
+  <p>Each servo has 3 wires: <strong style="color:#cd853f">brown</strong> (ground), <strong style="color:#e44">red</strong> (power), <strong style="color:#fa0">orange</strong> (signal). Power comes from the PSU — never from the Pi GPIO pins.</p>
+
+  <div class="warn"><strong>⚠ Warning:</strong> Connect servo red (power) wires to the PSU breadboard rail ONLY. Connecting them to Pi GPIO pins will overheat and melt the wires.</div>
+
+  <h3>Power connections (breadboard)</h3>
+  <table>
+    <tr><th>Wire</th><th>From</th><th>To</th></tr>
+    <tr><td>All servo <strong style="color:#e44">red</strong></td><td>Servo power</td><td>Breadboard red (+) rail</td></tr>
+    <tr><td>All servo <strong style="color:#cd853f">brown</strong></td><td>Servo ground</td><td>Breadboard blue (−) rail</td></tr>
+    <tr><td>PSU <strong>+V</strong></td><td>Power supply</td><td>Breadboard red (+) rail</td></tr>
+    <tr><td>PSU <strong>−V</strong></td><td>Power supply</td><td>Breadboard blue (−) rail</td></tr>
+    <tr><td>Pi <strong>Pin 6</strong> (GND)</td><td>Raspberry Pi</td><td>Breadboard blue (−) rail</td></tr>
+  </table>
+
+  <h3>Signal connections (Pi GPIO — orange wires only)</h3>
+  <table>
+    <tr><th>Servo</th><th>Joint</th><th>Pi Physical Pin</th><th>GPIO</th></tr>
+    <tr><td>S1</td><td>Base (rotation)</td><td>Pin 11</td><td>GPIO 17</td></tr>
+    <tr><td>S3</td><td>Middle Arm</td><td>Pin 15</td><td>GPIO 22</td></tr>
+    <tr><td>S4</td><td>Upper Arm</td><td>Pin 16</td><td>GPIO 23</td></tr>
+    <tr><td>S5</td><td>Wrist</td><td>Pin 18</td><td>GPIO 24</td></tr>
+    <tr><td>S6</td><td>Claw</td><td>Pin 22</td><td>GPIO 25</td></tr>
+  </table>
+  <div class="tip"><strong>Note:</strong> S2 (lower arm) is disabled due to a faulty servo. The arm works with 5 servos.</div>
+</section>
+
+<!-- SOFTWARE -->
+<section id="software">
+  <h2><span class="num">2</span>Software Setup</h2>
+  <p>SSH into the Pi, then run these commands in order:</p>
+
+  <h3>1. Update the system</h3>
+  <pre>sudo apt update && sudo apt upgrade -y</pre>
+
+  <h3>2. Install pigpio (servo control)</h3>
+  <pre>sudo apt install git -y
+git clone https://github.com/joan2937/pigpio.git
+cd pigpio && make && sudo make install
+sudo cp /home/pi/pigpio/util/pigpiod.service /lib/systemd/system/
+sudo sed -i 's|/usr/bin/pigpiod|/usr/local/bin/pigpiod|' /lib/systemd/system/pigpiod.service
+sudo systemctl daemon-reload
+sudo systemctl enable pigpiod
+sudo systemctl start pigpiod</pre>
+
+  <h3>3. Install Python libraries</h3>
+  <pre>sudo apt install python3-opencv rpicam-apps python3-picamera2 -y
+pip3 install flask --break-system-packages</pre>
+
+  <h3>4. Copy the project files</h3>
+  <pre>git clone https://github.com/hanepo/armbotguideline.git ~/armbot
+cd ~/armbot</pre>
+
+  <div class="tip"><strong>Verify:</strong> Run <code>sudo systemctl status pigpiod</code> — should say <em>active (running)</em> in green.</div>
+</section>
+
+<!-- CAMERA -->
+<section id="camera">
+  <h2><span class="num">3</span>Camera Setup</h2>
+  <p>The Pi Camera Rev 1.3 connects via ribbon cable to the Pi's CSI port.</p>
+  <ul class="steps" style="counter-reset:step">
+    <li>Lift the small plastic clip on the Pi's CSI port (between USB-C and HDMI)</li>
+    <li>Slide the ribbon cable in — blue strip faces toward the HDMI port</li>
+    <li>Push the clip down to lock it</li>
+    <li>Mount camera directly overhead, centered above the arm base, pointing straight down</li>
+    <li>Use a 50cm ribbon cable extension to reach the overhead position</li>
+  </ul>
+  <h3>Test the camera</h3>
+  <pre>rpicam-jpeg -o test.jpg</pre>
+  <p>Should print: <code>Still capture image received</code></p>
+
+  <h3>Preview + grid alignment</h3>
+  <pre>cd ~/armbot && python3 camera_test.py</pre>
+  <p>Open <strong>http://&lt;pi-ip&gt;:5001</strong> on any browser. Use the sliders to align the green grid with the masking tape on the table.</p>
+</section>
+
+<!-- CALIBRATE -->
+<section id="calibrate">
+  <h2><span class="num">4</span>Calibrate the Work Zone</h2>
+
+  <p>Mark a <strong>20×20 cm</strong> square on the table (centered on the arm) and divide it into a 3×3 grid using masking tape:</p>
+
+  <div class="zone-grid">
+    <div class="zone-cell">1</div><div class="zone-cell">2</div><div class="zone-cell">3</div>
+    <div class="zone-cell">4</div><div class="zone-cell arm">ARM</div><div class="zone-cell">6</div>
+    <div class="zone-cell">7</div><div class="zone-cell">8</div><div class="zone-cell">9</div>
+  </div>
+
+  <p>Each zone is approximately <strong>7×7 cm</strong>. Zone 5 (center, under the arm) is skipped.</p>
+
+  <h3>Run the calibration tool</h3>
+  <pre>python3 calibrate.py</pre>
+
+  <p>For each zone (1–4, 6–9) and each drop container:</p>
+  <ol class="steps" style="counter-reset:step">
+    <li>Place a box in the zone shown on screen</li>
+    <li>Use <strong>← →</strong> to select a servo, <strong>↑ ↓</strong> to move it</li>
+    <li>Move the arm until the claw is directly above the box</li>
+    <li>Press <strong>S</strong> to save, then <strong>N</strong> for the next position</li>
+  </ol>
+  <div class="tip"><strong>Tip:</strong> Saved positions are stored in <code>positions.json</code>. You can re-run calibrate.py any time to adjust.</div>
+</section>
+
+<!-- RUN -->
+<section id="run">
+  <h2><span class="num">5</span>Run the Sorter</h2>
+
+  <h3>Start the program</h3>
+  <pre>cd ~/armbot && python3 sorter.py</pre>
+
+  <p>The arm moves to home position and the camera starts watching the grid. Place any colored box anywhere in zones 1–4 or 6–9 and the arm will:</p>
+  <ol class="steps" style="counter-reset:step">
+    <li>Detect the box color and which zone it's in</li>
+    <li>Rotate and reach to that zone</li>
+    <li>Grab the box with the claw</li>
+    <li>Move to the matching container</li>
+    <li>Drop the box and return home</li>
+  </ol>
+
+  <div class="tip"><strong>Colors supported:</strong> <span class="pill red">Red</span> <span class="pill green">Green</span> <span class="pill blue">Blue</span></div>
+
+  <h3>Stop the program</h3>
+  <pre>Press Ctrl + C</pre>
+</section>
+
+<!-- TROUBLESHOOT -->
+<section id="troubleshoot">
+  <h2><span class="num">6</span>Troubleshooting</h2>
+
+  <div class="card">
+    <h3>Servo not moving</h3>
+    <p>Check: PSU is on (green LED) · Shared ground wire from Pi GND to breadboard blue rail · <code>sudo systemctl status pigpiod</code> shows running</p>
+  </div>
+  <div class="card">
+    <h3>Camera not detected</h3>
+    <p>Check: Ribbon cable is fully seated · Blue strip faces HDMI · Run <code>rpicam-jpeg -o test.jpg</code> to verify</p>
+  </div>
+  <div class="card">
+    <h3>Wrong color detected</h3>
+    <p>Ensure good lighting (no direct light into lens) · Use solid-colored objects · Adjust HSV thresholds in <code>sorter.py</code> if needed</p>
+  </div>
+  <div class="card">
+    <h3>Arm misses the box</h3>
+    <p>Re-run <code>python3 calibrate.py</code> and adjust the zone positions · Make sure box is fully inside the zone square</p>
+  </div>
+</section>
+
+<footer>
+  <p>ArmBot Color Sorter — Built with Raspberry Pi 4, OpenCV &amp; pigpio</p>
+  <p style="margin-top:6px"><a href="https://github.com/hanepo/armbotguideline">github.com/hanepo/armbotguideline</a></p>
+</footer>
+
+<!-- DEMO ANIMATION -->
+<script>
+const canvas = document.getElementById('demo');
+const ctx    = canvas.getContext('2d');
+const W = canvas.width, H = canvas.height;
+const CX = W/2, CY = H/2 + 20;
+
+const COLORS = ['#f44336','#4caf50','#4a9eff'];
+const CNAMES = ['red','green','blue'];
+
+// Containers: left(red), top(blue), right(green)
+const containers = [
+  { x: 52,  y: CY,   color: '#f44336', label: 'RED'   },
+  { x: CX,  y: 36,   color: '#4a9eff', label: 'BLUE'  },
+  { x: W-52,y: CY,   color: '#4caf50', label: 'GREEN' },
+];
+
+// 3x3 zone centers (skip zone 5)
+const ZW = 52, ZH = 44;
+function zoneCenter(z) {
+  const col = (z-1)%3, row = Math.floor((z-1)/3);
+  return { x: CX + (col-1)*ZW, y: CY + (row-1)*ZH };
+}
+const zones = [1,2,3,4,6,7,8,9];
+
+let state = 'idle';
+let armAngle = Math.PI/2; // pointing up
+let armReach = 0.3;       // 0..1
+let box = null;
+let t = 0;
+let targetAngle = 0, targetReach = 0;
+let clawOpen = true;
+let phase = 0;
+let stepT = 0;
+
+function spawnBox() {
+  const zone = zones[Math.floor(Math.random()*zones.length)];
+  const c = Math.floor(Math.random()*3);
+  const {x,y} = zoneCenter(zone);
+  return { zone, colorIdx: c, color: COLORS[c], name: CNAMES[c], x, y, held: false, done: false };
+}
+
+function lerp(a,b,t){ return a+(b-a)*t; }
+function easeInOut(t){ return t<.5? 2*t*t : -1+(4-2*t)*t; }
+
+function armTip() {
+  const maxR = 120;
+  return {
+    x: CX + Math.cos(armAngle) * armReach * maxR,
+    y: CY + Math.sin(armAngle) * armReach * maxR,
+  };
+}
+
+function drawGrid() {
+  for(let row=0;row<3;row++) for(let col=0;col<3;col++) {
+    const zone = row*3+col+1;
+    const x = CX + (col-1)*ZW - ZW/2+2;
+    const y = CY + (row-1)*ZH - ZH/2+2;
+    ctx.strokeStyle = zone===5 ? '#1a1a2a' : '#1e1e30';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(x, y, ZW-4, ZH-4);
+    if(zone!==5) {
+      ctx.fillStyle = '#2a2a40';
+      ctx.font = '10px sans-serif';
+      ctx.textAlign='center'; ctx.textBaseline='top';
+      ctx.fillText(zone, x+ZW/2-2, y+4);
+    }
+  }
+}
+
+function drawContainers() {
+  containers.forEach(c => {
+    ctx.fillStyle = c.color+'33';
+    ctx.strokeStyle = c.color+'88';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.roundRect(c.x-22, c.y-18, 44, 36, 6);
+    ctx.fill(); ctx.stroke();
+    ctx.fillStyle = c.color+'cc';
+    ctx.font='bold 9px sans-serif';
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(c.label, c.x, c.y);
+  });
+}
+
+function drawArm() {
+  const tip = armTip();
+  ctx.save();
+  // base circle
+  ctx.beginPath(); ctx.arc(CX,CY,10,0,Math.PI*2);
+  ctx.fillStyle='#2a2a50'; ctx.fill();
+  ctx.strokeStyle='#4a9eff'; ctx.lineWidth=2; ctx.stroke();
+
+  // arm line
+  ctx.beginPath(); ctx.moveTo(CX,CY); ctx.lineTo(tip.x,tip.y);
+  ctx.strokeStyle='#4a9eff'; ctx.lineWidth=3; ctx.stroke();
+
+  // claw
+  const cl = clawOpen ? 10 : 4;
+  const perp = { x: -Math.sin(armAngle)*cl, y: Math.cos(armAngle)*cl };
+  ctx.beginPath();
+  ctx.moveTo(tip.x+perp.x, tip.y+perp.y);
+  ctx.lineTo(tip.x, tip.y);
+  ctx.lineTo(tip.x-perp.x, tip.y-perp.y);
+  ctx.strokeStyle='#a78bfa'; ctx.lineWidth=2.5; ctx.stroke();
+
+  ctx.restore();
+}
+
+function drawBox(b) {
+  if(b.done) return;
+  const bx = b.held ? armTip().x : b.x;
+  const by = b.held ? armTip().y : b.y;
+  ctx.fillStyle = b.color;
+  ctx.fillRect(bx-8, by-8, 16, 16);
+  ctx.strokeStyle='#fff3'; ctx.lineWidth=1; ctx.strokeRect(bx-8,by-8,16,16);
+}
+
+function drawStatus(msg, color) {
+  ctx.fillStyle = color || '#4a9eff';
+  ctx.font = 'bold 12px sans-serif';
+  ctx.textAlign='center'; ctx.textBaseline='bottom';
+  ctx.fillText(msg, W/2, H-10);
+}
+
+// Animation state machine
+let phases = [];
+let phaseIdx = 0;
+
+function buildPhases(b) {
+  const cont = containers[b.colorIdx];
+  const toAngle = Math.atan2(b.y - CY, b.x - CX);
+  const toCAngle = Math.atan2(cont.y - CY, cont.x - CX);
+  const maxR = 120;
+  const dist  = Math.hypot(b.x-CX, b.y-CY)/maxR;
+  const cDist = Math.hypot(cont.x-CX,cont.y-CY)/maxR;
+  return [
+    { dur:60, label:'Detecting color…', fn:(p)=>{ armAngle=armAngle; armReach=0.3; clawOpen=true; }},
+    { dur:50, label:'Rotating to zone…', fn:(p)=>{ armAngle=lerp(armAngle, toAngle, easeInOut(p)); clawOpen=true; }},
+    { dur:40, label:'Reaching down…',   fn:(p)=>{ armReach=lerp(0.3, dist, easeInOut(p)); clawOpen=true; }},
+    { dur:30, label:'Grabbing!',        fn:(p)=>{ armReach=dist; clawOpen=p<0.5; if(p>0.4) b.held=true; }},
+    { dur:40, label:'Lifting…',         fn:(p)=>{ armReach=lerp(dist,0.3,easeInOut(p)); }},
+    { dur:60, label:`Sorting ${b.name}…`,fn:(p)=>{ armAngle=lerp(toAngle,toCAngle,easeInOut(p)); }},
+    { dur:40, label:'Dropping…',        fn:(p)=>{ armReach=lerp(0.3,cDist,easeInOut(p)); }},
+    { dur:25, label:'Releasing!',       fn:(p)=>{ clawOpen=true; if(p>0.6){b.held=false;b.done=true;} }},
+    { dur:40, label:'Returning home…',  fn:(p)=>{ armReach=lerp(cDist,0.3,easeInOut(p)); }},
+  ];
+}
+
+let currentPhases = null;
+let currentBox    = null;
+let phaseI        = 0;
+let phaseT        = 0;
+let idleT         = 0;
+
+function tick() {
+  ctx.clearRect(0, 0, W, H);
+
+  // background grid lines
+  ctx.strokeStyle='#ffffff08'; ctx.lineWidth=1;
+  for(let x=0;x<W;x+=40){ ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke(); }
+  for(let y=0;y<H;y+=40){ ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke(); }
+
+  drawGrid();
+  drawContainers();
+
+  if(!currentPhases) {
+    idleT++;
+    drawArm();
+    drawStatus('Place a box in any zone…', '#555');
+    if(idleT > 80) {
+      currentBox = spawnBox();
+      currentPhases = buildPhases(currentBox);
+      phaseI = 0; phaseT = 0; idleT = 0;
+    }
+  } else {
+    const ph = currentPhases[phaseI];
+    const p  = Math.min(1, phaseT / ph.dur);
+    ph.fn(p);
+    drawBox(currentBox);
+    drawArm();
+    drawStatus(ph.label);
+    phaseT++;
+    if(phaseT > ph.dur) {
+      phaseI++; phaseT = 0;
+      if(phaseI >= currentPhases.length) {
+        currentPhases = null; currentBox = null;
+        armAngle = -Math.PI/2; armReach = 0.3; clawOpen = true;
+      }
+    }
+  }
+
+  requestAnimationFrame(tick);
+}
+tick();
+</script>
+
+</body>
+</html>
