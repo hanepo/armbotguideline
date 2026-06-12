@@ -238,9 +238,43 @@
     <strong>First time connecting?</strong> It will ask: <em>"Are you sure you want to continue connecting?"</em> — type <code>yes</code> and press Enter. Only asks once.
   </div>
 
-  <h3>If robotarm.local doesn't work</h3>
-  <p>Find the Pi's IP address from your router admin page, then use:</p>
-  <pre>ssh pi@192.168.x.x</pre>
+  <h3>If robotarm.local doesn't work — 3 ways to find the IP</h3>
+
+  <div class="card" style="margin-bottom:12px">
+    <div style="color:var(--blue);font-weight:700;margin-bottom:8px">Method 1 — Easiest: Use the Fing app (recommended)</div>
+    <ol style="margin-left:18px;line-height:2;color:var(--text);font-size:.9rem">
+      <li>Download <strong>Fing</strong> app on your phone (free, App Store or Google Play)</li>
+      <li>Make sure your phone is on the same WiFi as the Pi</li>
+      <li>Open Fing → tap <strong>Scan for devices</strong></li>
+      <li>Look for a device named <strong>robotarm</strong> or <strong>Raspberry Pi</strong></li>
+      <li>The number next to it (e.g. 192.168.1.45) is the IP address</li>
+    </ol>
+    <pre style="margin-top:10px">ssh pi@192.168.1.45   ← use YOUR actual number from Fing</pre>
+  </div>
+
+  <div class="card" style="margin-bottom:12px">
+    <div style="color:var(--blue);font-weight:700;margin-bottom:8px">Method 2 — From Mac/Linux Terminal</div>
+    <p style="font-size:.88rem;margin-bottom:8px">Open Terminal and type:</p>
+    <pre>ping robotarm.local</pre>
+    <p style="font-size:.88rem;margin:8px 0">You will see something like:</p>
+    <pre style="color:#aaa">PING robotarm.local (192.168.1.45): 56 data bytes</pre>
+    <p style="font-size:.88rem;margin-top:8px">The number in brackets <strong>(192.168.1.45)</strong> is the IP. Press Ctrl+C to stop, then:</p>
+    <pre>ssh pi@192.168.1.45</pre>
+  </div>
+
+  <div class="card">
+    <div style="color:var(--blue);font-weight:700;margin-bottom:8px">Method 3 — Router admin page</div>
+    <ol style="margin-left:18px;line-height:2.2;color:var(--text);font-size:.9rem">
+      <li>Open any browser on your laptop</li>
+      <li>Type <strong>192.168.1.1</strong> in the address bar and press Enter<br>
+          <span style="color:var(--muted);font-size:.82rem">(if that doesn't work, try 192.168.0.1 or 10.0.0.1)</span></li>
+      <li>Login — username and password are usually printed on a sticker on the bottom of your router</li>
+      <li>Look for a section called <strong>Connected Devices</strong>, <strong>DHCP Clients</strong>, or <strong>Device List</strong></li>
+      <li>Find <strong>robotarm</strong> in the list — the number next to it is the IP address</li>
+      <li>Use that IP: <code>ssh pi@192.168.x.x</code></li>
+    </ol>
+    <div class="tip" style="margin-top:12px"><strong>Tip:</strong> The IP address may change every time the Pi reboots. Method 1 (Fing) is the most reliable way to find it each time.</div>
+  </div>
 
   <h3>If WiFi fails — use the fallback hotspot</h3>
   <p>The Pi creates its own WiFi if it can't connect to any saved network:</p>
