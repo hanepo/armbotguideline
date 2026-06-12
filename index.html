@@ -209,6 +209,55 @@
   </div>
 </section>
 
+<!-- CONNECT -->
+<section id="connect">
+  <h2><span class="num">💻</span>Connect to the Raspberry Pi</h2>
+  <p>You control the Pi remotely from your laptop using SSH — no monitor needed.</p>
+
+  <h3>Requirements</h3>
+  <ul style="margin:0 0 16px 20px;color:var(--text);line-height:2">
+    <li>Your laptop must be on the <strong>same WiFi</strong> as the Pi</li>
+    <li>Mac/Linux: use Terminal &nbsp;|&nbsp; Windows: use PowerShell or PuTTY</li>
+  </ul>
+
+  <h3>SSH command</h3>
+  <pre>ssh pi@robotarm.local</pre>
+
+  <div class="card" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px">
+    <div>
+      <div style="color:var(--muted);font-size:.78rem;margin-bottom:4px">USERNAME</div>
+      <div style="font-size:1.1rem;font-weight:700;color:var(--blue)">pi</div>
+    </div>
+    <div>
+      <div style="color:var(--muted);font-size:.78rem;margin-bottom:4px">PASSWORD</div>
+      <div style="font-size:1.1rem;font-weight:700;color:var(--blue)">admin123</div>
+    </div>
+  </div>
+
+  <div class="tip" style="margin-top:16px">
+    <strong>First time connecting?</strong> It will ask: <em>"Are you sure you want to continue connecting?"</em> — type <code>yes</code> and press Enter. Only asks once.
+  </div>
+
+  <h3>If robotarm.local doesn't work</h3>
+  <p>Find the Pi's IP address from your router admin page, then use:</p>
+  <pre>ssh pi@192.168.x.x</pre>
+
+  <h3>If WiFi fails — use the fallback hotspot</h3>
+  <p>The Pi creates its own WiFi if it can't connect to any saved network:</p>
+  <div class="card" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px">
+    <div>
+      <div style="color:var(--muted);font-size:.78rem;margin-bottom:4px">HOTSPOT NAME</div>
+      <div style="font-size:1.1rem;font-weight:700;color:var(--green)">RobotArm</div>
+    </div>
+    <div>
+      <div style="color:var(--muted);font-size:.78rem;margin-bottom:4px">PASSWORD</div>
+      <div style="font-size:1.1rem;font-weight:700;color:var(--green)">robotarm123</div>
+    </div>
+  </div>
+  <p style="margin-top:12px">Connect your phone/laptop to <strong>RobotArm</strong>, then SSH using:</p>
+  <pre>ssh pi@192.168.4.1</pre>
+</section>
+
 <!-- PARTS -->
 <section id="parts">
   <h2><span class="num">0</span>Parts You Need</h2>
