@@ -382,7 +382,28 @@ cd ~/armbot</pre>
 
   <h3>Preview + grid alignment</h3>
   <pre>cd ~/armbot && python3 camera_test.py</pre>
-  <p>Open <strong>http://&lt;pi-ip&gt;:5001</strong> on any browser. Use the sliders to align the green grid with the masking tape on the table.</p>
+
+  <div class="card" style="margin-top:12px">
+    <div style="color:var(--blue);font-weight:700;font-size:1rem;margin-bottom:8px">Open the camera website</div>
+    <ol style="margin-left:18px;line-height:2.2;font-size:.9rem">
+      <li>Make sure your laptop/phone is on the same WiFi as the Pi</li>
+      <li>Open any browser (Chrome, Safari, etc.)</li>
+      <li>Type this address and press Enter:</li>
+    </ol>
+    <pre style="margin:10px 0">http://robotarm.local:5001</pre>
+    <p style="font-size:.88rem;color:var(--muted)">If that doesn't work, replace <code>robotarm.local</code> with the Pi's IP address (see Connect section above):</p>
+    <pre>http://192.168.1.45:5001   ← use YOUR Pi's IP</pre>
+  </div>
+
+  <h3 style="margin-top:18px">What you will see</h3>
+  <ul style="margin-left:18px;line-height:2.2;font-size:.9rem">
+    <li><strong>Live video</strong> from the overhead camera</li>
+    <li><strong>Green grid lines</strong> dividing the 9 zones (1–9)</li>
+    <li><strong>Colored dot + label</strong> on any detected box — e.g. RED Z3, BLUE Z7</li>
+    <li><strong>Sliders</strong> to adjust the grid until it lines up with your masking tape</li>
+    <li>Click <strong>Save Grid Settings</strong> when the grid is aligned</li>
+  </ul>
+  <div class="tip"><strong>Note:</strong> This camera preview runs separately from the sorter. Stop it (Ctrl+C) before running sorter.py.</div>
 </section>
 
 <!-- CALIBRATE -->
